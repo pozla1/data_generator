@@ -12,175 +12,11 @@ def generate_family(fam_id, magics, misc_consts):
 
     # Single person family
     if rand <= magics["fam_type"][0]:
-        # Decide if elderly or not
-        rand = random.random()
-        # Not elderly
-        if rand < magics["elderly_num"][0][0]:
-            # Decide if younger single or older single
-            rand = random.random()
-            # Younger single
-            if rand < magics["single_type"][0]:
-                agent_type = "single0"
-                min_age = misc_consts["age_groups"][2][0]
-                max_age = misc_consts["age_groups"][2][1]
-            # Older single
-            else:
-                agent_type = "single1"
-                min_age = misc_consts["age_groups"][3][0]
-                max_age = misc_consts["age_groups"][3][1]
-        # Elderly
-        else:
-            agent_type = "elderly"
-            min_age = misc_consts["age_groups"][4][0]
-            max_age = misc_consts["age_groups"][4][1]
-
-        agent = {"for_check": {"family_ID": fam_id, "family_type": 0, "agent_type": agent_type},
-                 "age": generate_age(min_age, max_age, magics["age_distrib"]),
-                 "sex": generate_sex()}
-        agents.append(agent)
+        generate_singleper(magics, misc_consts, fam_id, agents)
 
     # Family with 1 parent or 2 parents
     elif rand <= magics["fam_type"][0] + magics["fam_type"][1] + magics["fam_type"][2]:
-        # Family with 1 parent
-        if rand <= magics["fam_type"][0] + magics["fam_type"][1]:
-            family_type = 1
-        # Family with 2 parents
-        else:
-            family_type = 2
-
-        # Get number of children
-        rand = random.random()
-        if rand <= magics["child_num"][family_type][0]:
-            num_of_children = 0
-        elif rand <= magics["child_num"][family_type][0] + magics["child_num"][family_type][1]:
-            num_of_children = 1
-        elif rand <= magics["child_num"][family_type][0] + magics["child_num"][family_type][1]\
-                + magics["child_num"][family_type][2]:
-            num_of_children = 2
-        else:
-            num_of_children = 3  # todo: 3+
-
-        # Get children age
-        min_age_children = 0
-        max_age_children = 0
-        if num_of_children != 0:
-            while True:
-                age_diff_children = random.randint(misc_consts["age_diff_children"][0],
-                                                   misc_consts["age_diff_children"][1])
-                children_age_intervals = []
-                for i in range(num_of_children):
-                    rand = random.random()
-                    if rand <= magics["child_age"][family_type - 1][0]:
-                        children_age_intervals.append([misc_consts["age_groups"][0][0],
-                                                       misc_consts["age_groups"][0][1]])
-                    elif rand <= magics["child_age"][family_type - 1][0] + magics["child_age"][family_type - 1][1]:
-                        children_age_intervals.append([misc_consts["age_groups"][1][0],
-                                                       misc_consts["age_groups"][1][1]])
-                    elif rand <= magics["child_age"][family_type - 1][0] + magics["child_age"][family_type - 1][1]\
-                            + magics["child_age"][family_type - 1][2]:
-                        children_age_intervals.append([misc_consts["age_groups"][2][0],
-                                                       misc_consts["age_groups"][2][1]])
-                    else:
-                        children_age_intervals.append([misc_consts["age_groups"][3][0],
-                                                       misc_consts["age_groups"][3][1]])
-
-                children_ages = []
-                for age_interval in children_age_intervals:
-                    children_ages.append(generate_age(age_interval[0], age_interval[1], magics["age_distrib"]))
-
-                min_age_children = children_ages[0]
-                max_age_children = children_ages[0]
-                for age in children_ages:
-                    if min_age_children < age:
-                        min_age_children = age
-                    if max_age_children > age:
-                        max_age_children = age
-
-                if max_age_children - min_age_children <= age_diff_children:
-                    break
-
-            for age in children_ages:
-                agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
-                                       "agent_type": get_child_type(age, misc_consts)},
-                         "age": age,
-                         "sex": generate_sex()}
-                agents.append(agent)
-
-        # Generate parents
-        while True:
-            age_diff_parents = random.randint(misc_consts["age_diff_parents"][0], misc_consts["age_diff_parents"][1])
-            age_diff_gen = random.randint(misc_consts["age_diff_gen"][0], misc_consts["age_diff_gen"][1])
-            parents_age_intervals = []
-            for i in range(family_type):
-                rand = random.random()
-                if rand <= magics["parent_type"][num_of_children][0]:
-                    parents_age_intervals.append([misc_consts["age_groups"][2][0], misc_consts["age_groups"][2][1]])
-                else:
-                    parents_age_intervals.append([misc_consts["age_groups"][3][0], misc_consts["age_groups"][3][1]])
-
-            parents_ages = []
-            for age_interval in parents_age_intervals:
-                parents_ages.append(generate_age(age_interval[0], age_interval[1], magics["age_distrib"]))
-
-            min_age_parents = parents_ages[0]
-            max_age_parents = parents_ages[0]
-            for age in parents_ages:
-                if min_age_parents < age:
-                    min_age_parents = age
-                if max_age_parents > age:
-                    max_age_parents = age
-
-            if max_age_parents - min_age_parents <= age_diff_parents \
-                    and min_age_parents - max_age_children <= age_diff_gen:
-                break
-
-        if len(parents_ages) == 1:
-            agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
-                                   "agent_type": get_parent_type(parents_ages[0], misc_consts)},
-                     "age": parents_ages[0],
-                     "sex": generate_sex()}
-            agents.append(agent)
-        elif parents_ages[0] >= parents_ages[1]:  # todo? father always older
-            agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
-                                   "agent_type": get_parent_type(parents_ages[0], misc_consts)},
-                     "age": parents_ages[0],
-                     "sex": "M"}
-            agents.append(agent)
-            agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
-                                   "agent_type": get_parent_type(parents_ages[1], misc_consts)},
-                     "age": parents_ages[1],
-                     "sex": "F"}
-            agents.append(agent)
-        else:
-            agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
-                                   "agent_type": get_parent_type(parents_ages[1], misc_consts)},
-                     "age": parents_ages[1],
-                     "sex": "M"}
-            agents.append(agent)
-            agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
-                                   "agent_type": get_parent_type(parents_ages[0], misc_consts)},
-                     "age": parents_ages[0],
-                     "sex": "F"}
-            agents.append(agent)
-
-        # Generate elderly
-        rand = random.random()
-        if rand <= magics["elderly_num"][family_type][0]:
-            num_of_elderly = 0
-        elif rand <= magics["elderly_num"][family_type][0] + magics["elderly_num"][family_type][1]:
-            num_of_elderly = 1
-        elif rand <= magics["elderly_num"][family_type][0] + magics["elderly_num"][family_type][1] \
-                + magics["elderly_num"][family_type][2]:
-            num_of_elderly = 2
-        else:
-            num_of_elderly = 3  # todo: 3+
-
-        for i in range(num_of_elderly):
-            agent = {"for_check": {"family_ID": fam_id, "family_type": family_type, "agent_type": "elderly"},
-                     "age": generate_age(misc_consts["age_groups"][4][0], misc_consts["age_groups"][4][1],
-                                         magics["age_distrib"]),
-                     "sex": generate_sex()}
-            agents.append(agent)
+        generate_famparent(rand, magics, misc_consts, fam_id, agents)
 
     # todo
     """
@@ -190,6 +26,210 @@ def generate_family(fam_id, magics, misc_consts):
     """
 
     return agents
+
+
+# Generates a single person family.
+def generate_singleper(magics, misc_consts, fam_id, agents):
+    # Decide if elderly or not
+    rand = random.random()
+    # Not elderly
+    if rand < magics["elderly_num"][0][0]:
+        # Decide if younger single or older single
+        rand = random.random()
+        # Younger single
+        if rand < magics["single_type"][0]:
+            agent_type = "single0"
+            min_age = misc_consts["age_groups"][2][0]
+            max_age = misc_consts["age_groups"][2][1]
+        # Older single
+        else:
+            agent_type = "single1"
+            min_age = misc_consts["age_groups"][3][0]
+            max_age = misc_consts["age_groups"][3][1]
+    # Elderly
+    else:
+        agent_type = "elderly"
+        min_age = misc_consts["age_groups"][4][0]
+        max_age = misc_consts["age_groups"][4][1]
+
+    agent = {"for_check": {"family_ID": fam_id, "family_type": 0, "agent_type": agent_type},
+             "age": generate_age(min_age, max_age, magics["age_distrib"]),
+             "sex": generate_sex()}
+    agents.append(agent)
+
+
+# Generates a family with one or two parents.
+def generate_famparent(rand, magics, misc_consts, fam_id, agents):
+    # Family with 1 parent
+    if rand <= magics["fam_type"][0] + magics["fam_type"][1]:
+        family_type = 1
+    # Family with 2 parents
+    else:
+        family_type = 2
+
+    # Get number of children
+    rand = random.random()
+    if rand <= magics["child_num"][family_type][0]:
+        num_of_children = 0
+    elif rand <= magics["child_num"][family_type][0] + magics["child_num"][family_type][1]:
+        num_of_children = 1
+    elif rand <= magics["child_num"][family_type][0] + magics["child_num"][family_type][1] \
+            + magics["child_num"][family_type][2]:
+        num_of_children = 2
+    else:
+        num_of_children = 3  # todo: 3+
+
+    # Get children age
+    children_ages = []
+    if num_of_children != 0:
+        while True:
+            age_diff_children = get_gaussian_value(misc_consts["age_diff_children"][0],
+                                                   misc_consts["age_diff_children"][1],
+                                                   misc_consts["age_diff_children"][2],
+                                                   misc_consts["age_diff_children"][3])
+            children_age_intervals = []
+            for i in range(num_of_children):
+                rand = random.random()
+                if rand <= magics["child_age"][family_type - 1][0]:
+                    children_age_intervals.append([misc_consts["age_groups"][0][0],
+                                                   misc_consts["age_groups"][0][1]])
+                elif rand <= magics["child_age"][family_type - 1][0] + magics["child_age"][family_type - 1][1]:
+                    children_age_intervals.append([misc_consts["age_groups"][1][0],
+                                                   misc_consts["age_groups"][1][1]])
+                elif rand <= magics["child_age"][family_type - 1][0] + magics["child_age"][family_type - 1][1] \
+                        + magics["child_age"][family_type - 1][2]:
+                    children_age_intervals.append([misc_consts["age_groups"][2][0],
+                                                   misc_consts["age_groups"][2][1]])
+                else:
+                    children_age_intervals.append([misc_consts["age_groups"][3][0],
+                                                   misc_consts["age_groups"][3][1]])
+
+            for age_interval in children_age_intervals:
+                children_ages.append(generate_age(age_interval[0], age_interval[1], magics["age_distrib"]))
+
+            min_age_children = children_ages[0]
+            max_age_children = children_ages[0]
+            for age in children_ages:
+                if min_age_children < age:
+                    min_age_children = age
+                if max_age_children > age:
+                    max_age_children = age
+
+            if max_age_children - min_age_children <= age_diff_children:
+                break
+
+        for age in children_ages:
+            agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
+                                   "agent_type": get_child_type(age, misc_consts)},
+                     "age": age,
+                     "sex": generate_sex()}
+            agents.append(agent)
+
+    # Generate parents
+    age_diff_gen = get_gaussian_value(misc_consts["age_diff_gen"][0], misc_consts["age_diff_gen"][1],
+                                      misc_consts["age_diff_gen"][2], misc_consts["age_diff_gen"][3])
+    if len(children_ages) == 0:
+        mother_age = generate_age(19, 62, magics["age_distrib"])
+    else:
+        mother_age = children_ages[0] + age_diff_gen
+
+    index = -1
+    if family_type == 1:
+        if mother_age <= 19:
+            index = 0
+        elif mother_age <= 24:
+            index = 1
+        elif mother_age <= 29:
+            index = 2
+        elif mother_age <= 34:
+            index = 3
+        elif mother_age <= 39:
+            index = 4
+        elif mother_age <= 49:
+            index = 5
+        elif mother_age <= 59:
+            index = 6
+        elif mother_age <= 69:
+            index = 7
+        elif mother_age <= 79:
+            index = 8
+        else:
+            index = 9
+
+        rand = random.random()
+        if rand < magics["famoneparent_sex"][index][0]:
+            sex = "M"
+        else:
+            sex = "F"
+
+        agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
+                               "agent_type": get_parent_type(mother_age, misc_consts)},
+                 "age": mother_age,
+                 "sex": sex}
+        agents.append(agent)
+
+    else:
+        rand = random.random()
+        if rand < magics["husband_age"][index][0]:
+            father_age_interval = [19, 19]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1]:
+            father_age_interval = [20, 24]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1] + magics["husband_age"][index][2]:
+            father_age_interval = [25, 29]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1] + magics["husband_age"][index][2] \
+                + magics["husband_age"][index][3]:
+            father_age_interval = [29, 34]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1] + magics["husband_age"][index][2] \
+                + magics["husband_age"][index][3] + magics["husband_age"][index][4]:
+            father_age_interval = [35, 39]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1] + magics["husband_age"][index][2] \
+                + magics["husband_age"][index][3] + magics["husband_age"][index][4] + magics["husband_age"][index][5]:
+            father_age_interval = [40, 49]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1] + magics["husband_age"][index][2] \
+                + magics["husband_age"][index][3] + magics["husband_age"][index][4] + magics["husband_age"][index][5] \
+                + magics["husband_age"][index][6]:
+            father_age_interval = [50, 59]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1] + magics["husband_age"][index][2] \
+                + magics["husband_age"][index][3] + magics["husband_age"][index][4] + magics["husband_age"][index][5] \
+                + magics["husband_age"][index][6] + magics["husband_age"][index][7]:
+            father_age_interval = [60, 69]
+        elif rand < magics["husband_age"][index][0] + magics["husband_age"][index][1] + magics["husband_age"][index][2] \
+                + magics["husband_age"][index][3] + magics["husband_age"][index][4] + magics["husband_age"][index][5] \
+                + magics["husband_age"][index][6] + magics["husband_age"][index][7] + magics["husband_age"][index][8]:
+            father_age_interval = [70, 79]
+        else:
+            father_age_interval = [80, 100]
+
+        agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
+                               "agent_type": get_parent_type(mother_age, misc_consts)},
+                 "age": mother_age,
+                 "sex": "F"}
+        agents.append(agent)
+
+        agent = {"for_check": {"family_ID": fam_id, "family_type": family_type,
+                               "agent_type": get_parent_type(mother_age, misc_consts)},
+                 "age": generate_age(father_age_interval[0], father_age_interval[1], magics["age_distrib"]),
+                 "sex": "M"}
+        agents.append(agent)
+
+    # Generate elderly
+    rand = random.random()
+    if rand <= magics["elderly_num"][family_type][0]:
+        num_of_elderly = 0
+    elif rand <= magics["elderly_num"][family_type][0] + magics["elderly_num"][family_type][1]:
+        num_of_elderly = 1
+    elif rand <= magics["elderly_num"][family_type][0] + magics["elderly_num"][family_type][1] \
+            + magics["elderly_num"][family_type][2]:
+        num_of_elderly = 2
+    else:
+        num_of_elderly = 3  # todo: 3+
+
+    for i in range(num_of_elderly):
+        agent = {"for_check": {"family_ID": fam_id, "family_type": family_type, "agent_type": "elderly"},
+                 "age": generate_age(misc_consts["age_groups"][4][0], misc_consts["age_groups"][4][1],
+                                     magics["age_distrib"]),
+                 "sex": generate_sex()}
+        agents.append(agent)
 
 
 # Returns the generated age between given minimum and maximum value.
@@ -292,3 +332,11 @@ def get_parent_type(age, misc_consts):
         return "parent0"
     else:
         return "parent1"
+
+
+# Returns a random integer with gaussian distribution with given mean and standard deviation between given boundaries.
+def get_gaussian_value(mu, sigma, min_value, max_value):
+    while True:
+        value = round(random.gauss(mu, sigma))
+        if min_value <= value <= max_value:
+            return value
