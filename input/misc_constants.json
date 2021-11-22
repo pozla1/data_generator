@@ -6,9 +6,15 @@
                    [63, 90]],
     "age_groups_comment": "Global age groups",
 
-    "age_diff_gen": 25,
+    "age_diff_gen": [25, 3, 19, 50],
     "age_diff_gen_comment": "Avg age difference between parent and child",
 
-    "age_diff_children": ,
-    "age_diff_children_comment": "Avg age difference between children (min-max)"
+    "age_diff_children": [2, 1, 1, 10],
+    "age_diff_children_comment": "Age difference between children: mu, sigma, min, max",
+
+    "education_ages": [[2, 3],
+                       [3, 6],
+                       [6, 14],
+                       [14, 18]],
+    "education_ages_comment": "Age intervals for education: creche - nursery - primary school - secondary school"
 }
