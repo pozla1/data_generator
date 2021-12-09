@@ -15,7 +15,7 @@ def check_agents(agents, magics_filename, misc_consts_filename, report_filename)
     child_age = [[0, 0, 0, 0], [0, 0, 0, 0]]
     single_type = [0, 0]
     parent_type = [[0, 0], [0, 0], [0, 0], [0, 0]]
-    age_distrib = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # todo
+    age_distrib = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     # Separate families by family ID
     families = {}

@@ -10,7 +10,7 @@ import rw
 
 # Set input file names
 residences_filename = "szeged_respoi.json"
-magics_filename_generation = "szeged_magic_numbers_original.json"
+magics_filename_generation = "szeged_magic_numbers_tuned.json"
 magics_filename_check = "szeged_magic_numbers_original.json"
 misc_consts_filename = "misc_constants.json"
 educational_institutions_filename = "educational_institutions.xls"
@@ -25,7 +25,7 @@ output_filename = "input_data"
 _generate_agents = True
 _add_education = True
 _check = True
-_clean_up = True  # Should be run every time
+_clean_up = True
 
 
 # ********** SCRIPT **********

@@ -62,7 +62,7 @@ def generate_agents(agents, residences_filename, magics_filename, misc_consts_fi
                 fam_id += 1
                 break
 
-        # If no agents can be placed (without 'other' family type), stop (todo)
+        # If no agents can be placed (without 'other' family type), stop
         is_end = True
         for cell in cells:
             if not (cell["ageDistribution"][2] == 0 and cell["ageDistribution"][3] == 0

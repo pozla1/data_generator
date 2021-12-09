@@ -18,7 +18,6 @@ def generate_family(fam_id, magics, misc_consts):
     elif rand <= magics["fam_type"][0] + magics["fam_type"][1] + magics["fam_type"][2]:
         generate_famparent(rand, magics, misc_consts, fam_id, agents)
 
-    # todo
     """
     # 'Other' family type
     else:
@@ -77,7 +76,7 @@ def generate_famparent(rand, magics, misc_consts, fam_id, agents):
             + magics["child_num"][family_type][2]:
         num_of_children = 2
     else:
-        num_of_children = 3  # todo: 3+
+        num_of_children = 3
 
     # Get children age
     children_ages = []
@@ -222,7 +221,7 @@ def generate_famparent(rand, magics, misc_consts, fam_id, agents):
             + magics["elderly_num"][family_type][2]:
         num_of_elderly = 2
     else:
-        num_of_elderly = 3  # todo: 3+
+        num_of_elderly = 3
 
     for i in range(num_of_elderly):
         agent = {"for_check": {"family_ID": fam_id, "family_type": family_type, "agent_type": "elderly"},
@@ -266,7 +265,7 @@ def get_age_group(rand, age_distrib):
     value17 = value16 + age_distrib[16]
 
     if rand <= value1:
-        age_interval = [0, 3]  # todo: load these numbers from file
+        age_interval = [0, 3]
     elif rand <= value2:
         age_interval = [4, 8]
     elif rand <= value3:
@@ -305,7 +304,7 @@ def get_age_group(rand, age_distrib):
     return age_interval
 
 
-# Returns generated sex.  # todo: implement real sex distribution
+# Returns generated sex.
 def generate_sex():
     rand = random.randint(0, 1)
     if rand == 0:
