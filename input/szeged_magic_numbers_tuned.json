@@ -1,8 +1,8 @@
 {
-	"fam_type": [0.179,
-	             0.209,
-	             0.584,
-                 0.028],
+	"fam_type": [0.030,
+	             0.015,
+	             0.955,
+                 0],
 	"fam_type_comment": "Family Type Distribution: 0: singlepers, 1: famoneparent, 2: famtwoparent, 3: other",
 
 	"elderly_num": [[0.475, 0.525, 0.000, 0.000],
@@ -12,8 +12,8 @@
 	"elderly_num_comment": "Number of Elderly: None 1 2 3+",
 
 	"child_num": [[1.000, 0.000, 0.000, 0.000],
-	              [0.000, 0.615, 0.308, 0.077],
-                  [0.334, 0.315, 0.264, 0.087],
+	              [0.000, 0.668, 0.270, 0.062],
+                  [0.444, 0.285, 0.206, 0.065],
                   [1.000, 0.000, 0.000, 0.000]],
 	"child_num_comment": "Number of Children: None 1 2 3+",	   
 			   
